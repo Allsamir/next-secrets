@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 import ThemeToggleButton from "./ThemeToggleButton";
 import Logo from "./Logo";
-import { UserButton, useAuth } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 const Navbar = async () => {
   const { userId } = auth();
@@ -20,6 +20,9 @@ const Navbar = async () => {
             <>
               <li>
                 <Link href={`/profile`}>Profile</Link>
+              </li>
+              <li>
+                <Link href={`/my-secrets`}>My Secrets</Link>
               </li>
               <li>
                 <UserButton afterSignOutUrl="/" />
