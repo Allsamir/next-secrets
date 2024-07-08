@@ -24,7 +24,7 @@ const ThemeToggleButton = () => {
       ?.setAttribute("data-theme", localTheme as string);
   }, [theme]);
   return (
-    <button className="btn btn-square btn-ghost">
+    <button className="btn btn-square btn-ghost ml-4">
       <label className="swap swap-rotate w-12 h-12">
         <input
           type="checkbox"
