@@ -1,7 +1,7 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { clerkClient, WebhookEvent } from "@clerk/nextjs/server";
-import { createUser, updateUser } from "@/lib/actions/user.action";
+import { createUser, updateUser, deleteUser } from "@/lib/actions/user.action";
 import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
   // For this guide, you simply log the payload to the console
   const { id } = evt.data;
   const eventType = evt.type;
-  // Create user in MongoDB
+  // Create user in MongoDB Database
   if (eventType === "user.created") {
     const { id, image_url, username, email_addresses } = evt.data;
     const user = {
@@ -78,7 +78,7 @@ export async function POST(req: Request) {
       user: newUser,
     });
   }
-
+  // Update user in MongoDB Database
   if (eventType === "user.updated") {
     const { id, image_url, username, email_addresses } = evt.data;
     const user = {
@@ -94,6 +94,13 @@ export async function POST(req: Request) {
       updatedUser: updatedUser,
     });
   }
+  // Delete User in MongoDB Database
+  if (eventType === "user.deleted") {
+    const { id } = evt.data;
+    await deleteUser(id);
+    NextResponse.json({ message: "User deleted successfully" });
+  }
+
   console.log(`Webhook with and ID of ${id} and type of ${eventType}`);
   console.log("Webhook body:", body);
 

@@ -30,3 +30,13 @@ export async function updateUser(email: string, updatedData: any) {
     console.log(error);
   }
 }
+
+export async function deleteUser(clerkId: string | undefined) {
+  try {
+    await dbConnect();
+    await User.findOneAndDelete({ clerkId: clerkId });
+    return "User deleted successfully";
+  } catch (error) {
+    console.log(error);
+  }
+}
