@@ -1,6 +1,5 @@
 import Link from "next/link";
 import React from "react";
-import ThemeToggleButton from "./ThemeToggleButton";
 import Logo from "./Logo";
 import { UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
@@ -73,8 +72,7 @@ const Navbar = async () => {
           )}
         </ul>
       </div>
-      {isAuth && <UserButton afterSignOutUrl="/" />}
-      <ThemeToggleButton />
+      <div className="mr-4">{isAuth && <UserButton afterSignOutUrl="/" />}</div>
     </div>
   );
 };
