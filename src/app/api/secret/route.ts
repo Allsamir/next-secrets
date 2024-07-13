@@ -3,10 +3,12 @@ import { currentUser } from "@clerk/nextjs/server";
 import Secret from "@/lib/models/Secret";
 import dbConnect from "@/lib/db";
 const crypto = require("crypto");
-const cipherkey = "abcdefghijklmnopqrstuvwxyz";
 
 function encrypt(text: string) {
-  const cipher = crypto.createCipher("aes-256-cbc", cipherkey);
+  const cipher = crypto.createCipher(
+    "aes-256-cbc",
+    process.env.NEXT_PUBLIC_CIPHER_KEY,
+  );
   let crypted = cipher.update(text, "utf8", "hex");
   crypted += cipher.final("hex");
   return crypted;

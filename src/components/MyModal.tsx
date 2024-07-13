@@ -17,15 +17,17 @@ const style = {
 
 export default function MyModal() {
   const [open, setOpen] = React.useState(false);
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { isLoaded, isSignedIn } = useUser();
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [isLoding, setLoading] = useState(false);
   const [secret, setSecret] = useState("");
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setSecret(e.target.value);
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/secret`, {
       method: "POST",
       headers: {
@@ -44,6 +46,7 @@ export default function MyModal() {
       toast.success("Your Secret is now Live!");
       setSecret("");
       handleClose();
+      setLoading(false);
     }
   };
 
@@ -82,7 +85,12 @@ export default function MyModal() {
               value={secret}
               onChange={handleChange}
             />
-            <button className="btn btn-outline btn-block mt-4">Share</button>
+            <button className="btn btn-outline btn-block mt-4">
+              Share{" "}
+              {isLoding && (
+                <span className="loading loading-spinner loading-md"></span>
+              )}
+            </button>
           </form>
         </Box>
       </Modal>
