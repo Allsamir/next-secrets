@@ -2,11 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import Secret from "@/lib/models/Secret";
 import dbConnect from "@/lib/db";
+const crypto = require("crypto");
+const cipherkey = "abcdefghijklmnopqrstuvwxyz";
+
+function encrypt(text: string) {
+  const cipher = crypto.createCipher("aes-256-cbc", cipherkey);
+  let crypted = cipher.update(text, "utf8", "hex");
+  crypted += cipher.final("hex");
+  return crypted;
+}
+
 export async function POST(req: NextRequest) {
   try {
     await dbConnect();
     const user = await currentUser();
     const payload = await req.json();
+    const secretIncrypted = encrypt(payload.secret);
     const userInSecretDB = await Secret.findOne(
       { clerkId: user?.id },
       "clerkId",
@@ -17,7 +28,7 @@ export async function POST(req: NextRequest) {
         {
           $push: {
             secret: {
-              secret: payload.secret,
+              secret: secretIncrypted,
             },
           },
         },
@@ -29,15 +40,14 @@ export async function POST(req: NextRequest) {
         email: user?.emailAddresses[0].emailAddress,
         secret: [
           {
-            secret: payload.secret,
+            secret: secretIncrypted,
           },
         ],
       };
 
       const createSecret = new Secret(secret);
-      await createSecret.save().then(() => {
-        return NextResponse.json({ message: "Secret Saved" }, { status: 201 });
-      });
+      await createSecret.save();
+      return NextResponse.json({ message: "Secret Saved" }, { status: 201 });
     }
   } catch (error) {
     console.error(error);

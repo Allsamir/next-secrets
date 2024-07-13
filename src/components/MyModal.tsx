@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Modal from "@mui/material/Modal";
 import { Box } from "@mui/material";
 import { useUser } from "@clerk/nextjs";
+import toast, { Toaster } from "react-hot-toast";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -36,6 +37,14 @@ export default function MyModal() {
     });
     const result = await res.json();
     console.log(result);
+    if (
+      result.message === "Secret Saved" ||
+      result.message === "Secret Updated"
+    ) {
+      toast.success("Your Secret is now Live!");
+      setSecret("");
+      handleClose();
+    }
   };
 
   if (!isLoaded || !isSignedIn) {
@@ -48,6 +57,9 @@ export default function MyModal() {
 
   return (
     <div className="text-center mt-8">
+      <div>
+        <Toaster />
+      </div>
       <button className="btn btn-outline" onClick={handleOpen}>
         Share Your Secret
       </button>
