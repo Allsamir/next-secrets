@@ -1,6 +1,7 @@
 import Modal from "@/components/MyModal";
-
-export default function MySecrectsPage() {
+import { currentUser } from "@clerk/nextjs/server";
+export default async function MySecrectsPage() {
+  const user = await currentUser();
   return (
     <div>
       <Modal />

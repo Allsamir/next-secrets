@@ -2,16 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import Secret from "@/lib/models/Secret";
 import dbConnect from "@/lib/db";
-const crypto = require("crypto");
+import crypto from "crypto";
 
-function encrypt(text: string) {
-  const cipher = crypto.createCipher(
-    "aes-256-cbc",
-    process.env.NEXT_PUBLIC_CIPHER_KEY,
-  );
-  let crypted = cipher.update(text, "utf8", "hex");
-  crypted += cipher.final("hex");
-  return crypted;
+const algorithm = "aes-256-cbc";
+const key = Buffer.from(process.env.NEXT_PUBLIC_CIPHER_KEY || "", "hex");
+const iv = Buffer.from(process.env.NEXT_PUBLIC_CIPHER_IV || "", "hex");
+
+function encrypt(text: string): string {
+  const cipher = crypto.createCipheriv(algorithm, key, iv);
+  let encrypted = cipher.update(text, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return encrypted;
 }
 
 export async function POST(req: NextRequest) {
@@ -19,7 +20,8 @@ export async function POST(req: NextRequest) {
     await dbConnect();
     const user = await currentUser();
     const payload = await req.json();
-    const secretIncrypted = encrypt(payload.secret);
+    const secretEncrypted = encrypt(payload.secret);
+
     const userInSecretDB = await Secret.findOne(
       { clerkId: user?.id },
       "clerkId",
@@ -30,7 +32,8 @@ export async function POST(req: NextRequest) {
         {
           $push: {
             secret: {
-              secret: secretIncrypted,
+              secret: secretEncrypted,
+              iv: iv.toString("hex"), // Store the IV for decryption
             },
           },
         },
@@ -42,7 +45,8 @@ export async function POST(req: NextRequest) {
         email: user?.emailAddresses[0].emailAddress,
         secret: [
           {
-            secret: secretIncrypted,
+            secret: secretEncrypted,
+            iv: iv.toString("hex"), // Store the IV for decryption
           },
         ],
       };
