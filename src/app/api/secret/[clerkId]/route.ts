@@ -1,4 +1,3 @@
-import SecretInterface from "@/interface/Secret";
 import dbConnect from "@/lib/db";
 import Secret from "@/lib/models/Secret";
 import { NextRequest, NextResponse } from "next/server";
