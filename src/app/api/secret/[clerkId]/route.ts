@@ -5,12 +5,9 @@ import crypto from "crypto";
 import { ObjectId } from "mongodb";
 
 const algorithm = "aes-256-cbc";
-const key = Buffer.from(
-  process.env.NEXT_PUBLIC_CIPHER_KEY || "default_cipher_key",
-  "hex",
-);
+const key = Buffer.from(process.env.CIPHER_KEY || "default_cipher_key", "hex");
 
-const iv = Buffer.from(process.env.NEXT_PUBLIC_CIPHER_IV || "", "hex");
+const iv = Buffer.from(process.env.CIPHER_IV || "", "hex");
 
 async function decrypt(text: string): Promise<string> {
   return new Promise((resolve, reject) => {
