@@ -2,6 +2,7 @@ import dbConnect from "@/lib/db";
 import Secret from "@/lib/models/Secret";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { ObjectId } from "mongodb";
 
 const algorithm = "aes-256-cbc";
 const key = Buffer.from(
@@ -33,11 +34,8 @@ export async function GET(
     await dbConnect();
     const { clerkId } = params;
     const secretData = await Secret.findOne({ clerkId: clerkId }, "secret");
-    if (!secretData || !secretData.secret || secretData.secret.length === 0) {
-      return NextResponse.json(
-        { message: "No secret found for this user" },
-        { status: 404 },
-      );
+    if (!secretData || !secretData.secret) {
+      return NextResponse.json({ message: "No secret found for this user" });
     }
     const { secret } = secretData;
     const decryptedSecretArray = [];
@@ -47,6 +45,7 @@ export async function GET(
       const updateDate = new Date(secretObject.updatedAt).toLocaleDateString();
       decryptedSecretArray.push({
         secret: decryptedSecret,
+        _id: secretObject._id,
         updatedTime: updateTime,
         updatedDate: updateDate,
       });
@@ -56,6 +55,40 @@ export async function GET(
     console.log(error);
     return NextResponse.json(
       { message: "Error happened in GET request" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { clerkId: string } },
+) {
+  try {
+    const { clerkId } = params;
+    const { secretId } = await req.json();
+    console.log(clerkId, secretId, "from Delete server");
+    const updateSecret = await Secret.findOneAndUpdate(
+      { clerkId: clerkId },
+      {
+        $pull: {
+          secret: { _id: new ObjectId(secretId) },
+        },
+      },
+      {
+        new: true,
+      },
+    );
+    if (updateSecret) {
+      return NextResponse.json(
+        { message: "Delete server", success: true },
+        { status: 200 },
+      );
+    }
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      { message: "Error happened in Delete request" },
       { status: 500 },
     );
   }

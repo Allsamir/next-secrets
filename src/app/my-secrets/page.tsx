@@ -1,11 +1,13 @@
 import Modal from "@/components/MyModal";
+import MySecret from "@/components/MySecret";
+import SecretInterface from "@/interface/Secret";
 import { currentUser } from "@clerk/nextjs/server";
 
 async function fetchMySecrets(clerkId: string) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_URL}/api/secret/${clerkId}`,
     {
-      next: { revalidate: 1000 },
+      cache: "no-store",
     },
   );
   if (!res.ok) {
@@ -16,12 +18,21 @@ async function fetchMySecrets(clerkId: string) {
 export default async function MySecrectsPage() {
   const user = await currentUser();
   if (user) {
-    const mySecrets = await fetchMySecrets(user.id);
+    const mySecrets: SecretInterface[] = await fetchMySecrets(user.id);
     console.log(mySecrets);
     return (
       <div>
         <Modal />
-        <div className="max-w-5xl"></div>
+        <div className="max-w-6xl mx-auto mt-8">
+          {mySecrets.length === 0 && (
+            <div className="flex flex-col justify-center items-center">
+              <h1 className="text-xl">You have not shared any secrets yet</h1>
+            </div>
+          )}
+          {mySecrets.map((secret, index) => (
+            <MySecret secret={secret} key={index} clerkId={user.id} />
+          ))}
+        </div>
       </div>
     );
   } else {

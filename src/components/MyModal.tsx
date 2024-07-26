@@ -4,6 +4,7 @@ import Modal from "@mui/material/Modal";
 import { Box } from "@mui/material";
 import { useUser } from "@clerk/nextjs";
 import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -17,6 +18,7 @@ const style = {
 
 export default function MyModal() {
   const [open, setOpen] = React.useState(false);
+  const router = useRouter();
   const { isLoaded, isSignedIn } = useUser();
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -47,6 +49,7 @@ export default function MyModal() {
       setSecret("");
       handleClose();
       setLoading(false);
+      router.refresh();
     }
   };
 

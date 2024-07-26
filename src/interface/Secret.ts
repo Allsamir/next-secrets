@@ -1,8 +1,8 @@
 interface SecretInterface {
   secret: string;
   _id: string;
-  createdAt: Date;
-  updatedAt: Date;
+  updatedTime: Date;
+  updatedDate: Date;
 }
 
 export default SecretInterface;
