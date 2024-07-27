@@ -50,6 +50,10 @@ export default function MyModal() {
       handleClose();
       setLoading(false);
       router.refresh();
+    } else {
+      toast.error("An error occurred while saving the secret.");
+      setLoading(false);
+      setSecret("");
     }
   };
 

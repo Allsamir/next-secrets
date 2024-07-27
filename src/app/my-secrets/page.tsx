@@ -19,7 +19,6 @@ export default async function MySecrectsPage() {
   const user = await currentUser();
   if (user) {
     const mySecrets: SecretInterface[] = await fetchMySecrets(user.id);
-    console.log(mySecrets);
     return (
       <div>
         <Modal />

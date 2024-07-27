@@ -62,9 +62,9 @@ export async function DELETE(
   { params }: { params: { clerkId: string } },
 ) {
   try {
+    await dbConnect();
     const { clerkId } = params;
     const { secretId } = await req.json();
-    console.log(clerkId, secretId, "from Delete server");
     const updateSecret = await Secret.findOneAndUpdate(
       { clerkId: clerkId },
       {
