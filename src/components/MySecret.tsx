@@ -41,6 +41,7 @@ const MySecret = ({
             icon: "success",
           });
           router.refresh();
+          setIsEditing(false);
         }
       })
       .catch((error) => console.log(error));
