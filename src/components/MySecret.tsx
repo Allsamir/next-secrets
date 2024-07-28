@@ -47,7 +47,7 @@ const MySecret = ({
       .catch((error) => console.log(error));
   };
 
-  const handleDelete = (clerkId: string, secretId: string) => {
+  const handleDelete = (clerkId?: string, secretId?: string) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -85,9 +85,8 @@ const MySecret = ({
             <textarea
               name="updatedSecret"
               defaultValue={secret.secret}
-              className="border-none outline-none resize-none bg-slate-200"
+              className="border-none outline-none resize-none bg-slate-200 md:w-96 my-textarea"
               ref={textArea}
-              cols={20}
             ></textarea>
           </>
         ) : (
@@ -95,7 +94,7 @@ const MySecret = ({
             <p>{secret.secret}</p>
           </>
         )}
-        <div className="flex gap-4 mt-2 font-light">
+        <div className="flex gap-4 mt-2 font-light md:text-sm text-xs">
           <span>{secret.updatedDate}</span>
           <span>{secret.updatedTime}</span>
         </div>

@@ -15,6 +15,48 @@ function encrypt(text: string): string {
   return encrypted;
 }
 
+async function decrypt(text: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    try {
+      const decipher = crypto.createDecipheriv(algorithm, key, iv);
+      let decrypted = decipher.update(text, "hex", "utf8");
+      decrypted += decipher.final("utf8");
+      resolve(decrypted);
+    } catch (error) {
+      console.error(error);
+      reject(new Error("Error happened while decrypting"));
+    }
+  });
+}
+
+export async function GET() {
+  try {
+    const encryptedSecrets = await Secret.aggregate([
+      { $unwind: "$secret" },
+      { $project: { secret: "$secret" } },
+    ]);
+    const decryptedSecretArray = await Promise.all(
+      encryptedSecrets.map(async (secretObject) => {
+        const { secret } = secretObject;
+        const decryptedSecret = await decrypt(secret.secret);
+        return {
+          secret: decryptedSecret,
+          _id: secret._id,
+          updatedTime: new Date(secret.updatedAt).toLocaleTimeString(),
+          updatedDate: new Date(secret.updatedAt).toLocaleDateString(),
+        };
+      }),
+    );
+    return NextResponse.json(decryptedSecretArray);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Error fetching secrets" },
+      { status: 500 },
+    );
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     await dbConnect();

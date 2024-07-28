@@ -3,10 +3,10 @@ import Secret from "@/lib/models/Secret";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { ObjectId } from "mongodb";
+import SecretInterface from "@/interface/Secret";
 
 const algorithm = "aes-256-cbc";
 const key = Buffer.from(process.env.CIPHER_KEY || "default_cipher_key", "hex");
-
 const iv = Buffer.from(process.env.CIPHER_IV || "", "hex");
 
 async function decrypt(text: string): Promise<string> {
@@ -31,11 +31,11 @@ export async function GET(
     await dbConnect();
     const { clerkId } = params;
     const secretData = await Secret.findOne({ clerkId: clerkId }, "secret");
+    const decryptedSecretArray: SecretInterface[] = [];
     if (!secretData || !secretData.secret) {
-      return NextResponse.json({ message: "No secret found for this user" });
+      return NextResponse.json(decryptedSecretArray);
     }
     const { secret } = secretData;
-    const decryptedSecretArray = [];
     for (const secretObject of secret) {
       const decryptedSecret = await decrypt(secretObject.secret);
       const updateTime = new Date(secretObject.updatedAt).toLocaleTimeString();

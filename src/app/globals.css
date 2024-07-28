@@ -5,3 +5,18 @@
 .cl-internal-phfxlr {
   margin: auto !important;
 }
+@media only screen and (max-width: 768px) {
+  .my-textarea {
+    width: 20rem;
+  }
+}
+@media only screen and (max-width: 480px) {
+  .my-textarea {
+    width: 15rem;
+  }
+}
+@media only screen and (max-width: 375px) {
+  .my-textarea {
+    width: 10rem;
+  }
+}
