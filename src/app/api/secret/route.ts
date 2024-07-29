@@ -31,6 +31,7 @@ async function decrypt(text: string): Promise<string> {
 
 export async function GET() {
   try {
+    await dbConnect();
     const encryptedSecrets = await Secret.aggregate([
       { $unwind: "$secret" },
       { $project: { secret: "$secret" } },
