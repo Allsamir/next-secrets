@@ -3,7 +3,7 @@ import SecretInterface from "@/interface/Secret";
 import React, { useCallback, useEffect, useState } from "react";
 import Secrets from "./Secrets";
 import { useInView } from "react-intersection-observer";
-import { fetchAllSecrets } from "@/app/page";
+import fetchAllSecrets from "@/util/fetchData";
 
 const secretsToFetch = 5;
 
