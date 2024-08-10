@@ -35,7 +35,9 @@ export async function GET() {
     const encryptedSecrets = await Secret.aggregate([
       { $unwind: "$secret" },
       { $project: { secret: "$secret" } },
+      { $sort: { "secret.updatedAt": -1 } },
     ]);
+    console.log(encryptedSecrets);
     const decryptedSecretArray = await Promise.all(
       encryptedSecrets.map(async (secretObject) => {
         const { secret } = secretObject;

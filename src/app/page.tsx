@@ -14,7 +14,6 @@ const fetchAllSecrets = async () => {
 };
 export default async function Home() {
   const allSecrets: SecretInterface[] = await fetchAllSecrets();
-  console.log(allSecrets);
   return (
     <>
       <h2 className="text-center text-xl md:text-2xl lg:text-3xl font-bold uppercase">
