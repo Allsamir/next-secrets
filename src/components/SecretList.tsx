@@ -24,7 +24,6 @@ const SecretList = ({ secretList }: { secretList: SecretInterface[] }) => {
       loadMoreSecrets();
     }
   }, [inView, loadMoreSecrets]);
-  console.log(secretsLength, secrets.length);
   return (
     <>
       <div className="max-w-6xl mx-auto mt-8">
