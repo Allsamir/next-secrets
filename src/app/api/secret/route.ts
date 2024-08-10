@@ -29,15 +29,19 @@ async function decrypt(text: string): Promise<string> {
   });
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await dbConnect();
+    const { searchParams } = new URL(req.url);
+    const skip = parseInt(searchParams.get("skip") as string) || 0;
+    const limit = parseInt(searchParams.get("limit") as string) || 10;
     const encryptedSecrets = await Secret.aggregate([
       { $unwind: "$secret" },
       { $project: { secret: "$secret" } },
       { $sort: { "secret.updatedAt": -1 } },
+      { $skip: skip },
+      { $limit: limit },
     ]);
-    console.log(encryptedSecrets);
     const decryptedSecretArray = await Promise.all(
       encryptedSecrets.map(async (secretObject) => {
         const { secret } = secretObject;
